@@ -1,0 +1,24 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "description": "asd",
+      "status": true
+    },
+    {
+      "id": 2,
+      "description": "123",
+      "status": false
+    },
+    {
+      "id": 3,
+      "description": "456",
+      "status": false
+    },
+    {
+      "id": 4,
+      "description": "789",
+      "status": true
+    }
+  ]
+}
