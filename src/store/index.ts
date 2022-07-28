@@ -7,7 +7,11 @@ export const store = configureStore({
   reducer: {
     todoReducer,
   },
-  middleware: [thunkMiddleware]
+  middleware: (getDefaultMiddleware) => {
+    return getDefaultMiddleware({
+      serializableCheck: false,
+    });
+  },
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

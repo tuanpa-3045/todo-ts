@@ -22,22 +22,34 @@ import { theme } from '../../theme';
 import { ITask } from '../../App';
 import { useForm } from 'react-hook-form';
 
+interface IProps {
+  item: ITask;
+  removeTodo: any;
+  handleChecked: any;
+  editTodo: any;
+  handleClickOpen: any;
+}
+
+interface IInput {
+  edit: string;
+}
+
 const Task = ({
   item,
   removeTodo,
   handleChecked,
   editTodo,
   handleClickOpen,
-}: any) => {
+}: IProps) => {
   const [edit, setEdit] = useState<boolean>(false);
   const { register, handleSubmit } = useForm({
     defaultValues: { edit: item.inputTodo },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: IInput) => {
     console.log(data);
-    
-    editTodo({ id: item.id, value: data.edit });
+
+    editTodo({ id: item.id, value: data.edit, callback: () => setEdit(false) });
   };
 
   return (
@@ -74,8 +86,8 @@ const Task = ({
                   edge="end"
                   aria-label="edit"
                   onClick={(e) => {
-                    e.preventDefault()
-                    setEdit(true)
+                    e.preventDefault();
+                    setEdit(true);
                   }}
                 >
                   <EditIcon color="primary" />
@@ -84,7 +96,7 @@ const Task = ({
               <Grid item>
                 <IconButton
                   edge="end"
-                  aria-label="edit"
+                  aria-label="delete"
                   onClick={() => handleClickOpen()}
                 >
                   <DeleteIcon color="error" />

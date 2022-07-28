@@ -1,17 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ReactNode } from 'react';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import {
-  Grid,
-  Button,
-  Input,
-  Pagination,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-} from '@mui/material';
+import { Grid, Button, Input, Pagination } from '@mui/material';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { fetchTodos } from './store/Slice/todoSlice';
@@ -21,6 +11,7 @@ import Task from './components/Task';
 
 import './style.css';
 import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from './store';
 
 export interface ITask {
   inputTodo: string;
@@ -34,22 +25,22 @@ export const App = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [searchKeyword, setSearchKeyword] = useState<string>('');
 
-  const dispatch = useDispatch();
-  const { filter } = useSelector((state: any) => state.todoReducer);
+  const dispatch = useDispatch<AppDispatch>();
+  const { filter } = useSelector((state: RootState) => state.todoReducer);
   useEffect(() => {
-    dispatch(fetchTodos("filter"))
+    // dispatch(fetchTodos(filter));
   }, []);
 
-  const removeTodo = (id: string) => {
-    const arr = todo.filter((item: any) => item.id != id);
+  const removeTodo = (id: string): any => {
+    const arr = todo.filter((item: ITask) => item.id != id);
     setTodo(arr);
   };
 
-  const editTodo = ({ id, value }: any) => {
+  const editTodo = ({ id, value, callback }: any) => {
     const index = todo.findIndex((item: ITask) => item.id === id);
     todo[index].inputTodo = value;
     setTodo(todo);
-    // callback();
+    callback();
   };
 
   const {
@@ -62,7 +53,7 @@ export const App = () => {
 
   useEffect(() => {}, []);
 
-  const onSubmit: any = (data: ITask) => {
+  const onSubmit = (data: any): void => {
     setTodo([
       ...todo,
       {
@@ -75,17 +66,16 @@ export const App = () => {
     resetField('inputTodo');
   };
 
-  const handleChecked = (id: any) => {
+  const handleChecked = (id: string) => {
     const index = todo.findIndex((ele: ITask) => ele.id === id);
     todo[index].status = !todo[index].status;
     setTodo([...todo]);
   };
 
-  const handleSearch = (e: any) => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const result = todo.filter((item) =>
       item.inputTodo.includes(e.target.value)
     );
-    console.log(result);
   };
 
   const filterTaskList = todo.filter(
@@ -94,10 +84,10 @@ export const App = () => {
   );
 
   const renderTaskList = () =>
-    filterTaskList.map((item: any) => (
+    filterTaskList.map((item: ITask, index: number) => (
       <Task
         item={item}
-        key={item.id}
+        key={index}
         removeTodo={removeTodo}
         handleChecked={handleChecked}
         editTodo={editTodo}
@@ -124,17 +114,6 @@ export const App = () => {
       <Grid item>
         <h1>todos</h1>
       </Grid>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle id="alert-dialog-title">Xoá Todo này</DialogTitle>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Huỷ
-          </Button>
-          <Button onClick={handleClose} autoFocus color="error">
-            Xoá
-          </Button>
-        </DialogActions>
-      </Dialog>
       {todo.length > 0 ? (
         <Grid item>
           <Input

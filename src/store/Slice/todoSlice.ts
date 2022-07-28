@@ -11,11 +11,25 @@ import axios from 'axios';
 import { ITask } from '../../App';
 import { API } from '../../constants';
 
+interface ITodoFilter {
+  _page: number;
+  _limit: number;
+  _totalRows: number;
+  q: string;
+}
+
+interface IInitialState {
+  todos: ITask[];
+  filter: ITodoFilter;
+  isLoading: boolean;
+}
+
 const initialState = {
-  todos: [] as ITask[],
+  todos: [],
   filter: {
     _page: 1,
     _limit: 3,
+    _totalRows: 0,
     q: '',
   },
   isLoading: false,
@@ -23,16 +37,15 @@ const initialState = {
 
 export const fetchTodos = createAsyncThunk(
   'todos/getTodo',
-  async (filter: string) => {
+  async (filter: ITodoFilter) => {
     try {
-      const { data } = await axios.get(`${API}`);
+      const { data } = await axios.get(`${API}/todos`, { params: filter });
       return data;
     } catch (err) {
       console.log(err);
     }
   }
 );
-
 
 const todoSlice = createSlice({
   name: 'todos',
@@ -51,10 +64,10 @@ const todoSlice = createSlice({
       .addCase(fetchTodos.pending, (state, action) => {
         state.isLoading = true;
       })
-      .addCase(fetchTodos.fulfilled, (state, action) => {
-        console.log(action.payload);
+      .addCase(fetchTodos.fulfilled, (state, { payload }) => {
+        const { data, pagination } = payload;
         state.isLoading = false;
-        state.todos = action.payload;
+        state.todos = data;
       })
       .addCase(fetchTodos.rejected, (state) => {
         state.isLoading = false;
